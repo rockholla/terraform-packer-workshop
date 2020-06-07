@@ -1,8 +1,6 @@
 # Exercise #5: Interacting with Providers
 
-Providers are plugins that Terraform uses to understand various external APIs and cloud providers.  Thus far in this
-workshop, we've used the AWS provider. In this exercise, we're going to modify the AWS provider we've been
-using to create our bucket in a different region.
+Providers are plugins that Terraform uses to understand various external APIs and cloud providers.  Thus far in this workshop, we've used the AWS provider. In this exercise, we're going to modify the AWS provider we've been using to create our bucket in a different region.
 
 ### Add the second provider
 
@@ -14,7 +12,7 @@ variable "region_alt" {
 }
 ```
 
-Then, add the new region to `main.tf` just under the existing provider block.
+Then, add the new variable reference to `main.tf` just under the existing provider block.
 
 ```hcl
 provider "aws" {
@@ -23,15 +21,14 @@ provider "aws" {
 }
 ```
 
-Now, lets provision and bring up another s3 bucket in this other region
+Now, lets provision and bring up a key pair is this alternate region:
 
 ```bash
 terraform init
 terraform apply
 terraform show
 ```
-The above should show that you have a bucket now named `rockholla-di-[your student alias]-alt` that was created in the
-us-west-2 region.
+The above should show that you have a key pair `rockholla-di-[your student alias]` that was created. The terraform resource/state itself doesn't actually tell us what region where the key pair lives, but you could easily verify that it was created in the expected region by visiting the appropriate console location: [https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#KeyPairs:](https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#KeyPairs:)
 
 *NOTE:* that at the beginning of our course we set the `AWS_DEFAULT_REGION` environment variable in your Cloud9 environment.
 Along with this variable and the access key and secret key, terraform is able to use these environment variables for the AWS
