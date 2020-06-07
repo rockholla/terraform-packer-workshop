@@ -10,8 +10,7 @@ You'll see two .tf files:
 
 ### main.tf
 
-Though the name of a terraform config file is mostly arbitrary, this is generally the name ascribed
-to the major configuration file within a Terraform working directory.
+Though the name of a terraform config file is mostly arbitrary, this is generally the name ascribed to the major configuration file within a Terraform working directory.
 
 Inside, you will see the following:
 
@@ -63,5 +62,4 @@ terraform fmt
 terraform validate
 ```
 
-If your "terraform init" command was successful, then you should be ready to move on. For now, don't run an apply.  
-We will get to this in a future exercise.
+If your "terraform init" command was successful, then you should be ready to move on. For now, don't run an apply. We will get to this in a future exercise.
