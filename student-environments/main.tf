@@ -9,7 +9,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "student_buckets" {
-  count         = "${length(var.students)}"
+  count         = length(var.students)
   bucket        = "rockholla-di-${var.students[count.index].name}"
   acl           = "private"
   provider      = aws.ohio
@@ -26,31 +26,25 @@ resource "aws_iam_account_password_policy" "students" {
 }
 
 resource "aws_iam_user" "students" {
-  count         = "${length(var.students)}"
-  name          = "${var.students[count.index].name}"
+  count         = length(var.students)
+  name          = var.students[count.index].name
   force_destroy = true
 }
 
-resource "aws_iam_access_key" "tests" {
-  count       = "${length(var.students)}"
-  user        = "${var.students[count.index].name}"
-  depends_on  = ["aws_iam_user.students"]
-}
-
 resource "aws_iam_user_login_profile" "students" {
-  count                   = "${length(var.students)}"
-  user                    = "${var.students[count.index].name}"
+  count                   = length(var.students)
+  user                    = var.students[count.index].name
   password_length         = 10
-  pgp_key                 = "${var.pgp_key}"
+  pgp_key                 = var.pgp_key
   password_reset_required = false
   lifecycle {
-    ignore_changes = ["password_length", "password_reset_required", "pgp_key"]
+    ignore_changes = [password_length, password_reset_required, pgp_key]
   }
-  depends_on = ["aws_iam_user.students"]
+  depends_on = [aws_iam_user.students]
 }
 
 resource "aws_iam_policy" "student_bucket_access" {
-  count         = "${length(var.students)}"
+  count         = length(var.students)
   name          = "${var.students[count.index].name}StudentBucketAccess"
   description   = "Allowing student access to their own bucket"
   policy = <<EOF
@@ -92,7 +86,7 @@ resource "aws_iam_policy" "student_bucket_access" {
 }
 EOF
 
-  depends_on = ["aws_iam_user.students"]
+  depends_on = [aws_iam_user.students]
 }
 
 resource "aws_iam_policy" "student_ec2_access" {
@@ -192,36 +186,36 @@ EOF
 }
 
 resource "aws_iam_user_policy_attachment" "student_bucket_access" {
-  count       = "${length(var.students)}"
-  user        = "${var.students[count.index].name}"
-  policy_arn  = "${aws_iam_policy.student_bucket_access.*.arn[count.index]}"
-  depends_on  = ["aws_iam_user.students"]
+  count       = length(var.students)
+  user        = var.students[count.index].name
+  policy_arn  = aws_iam_policy.student_bucket_access.*.arn[count.index]
+  depends_on  = [aws_iam_user.students]
 }
 
 resource "aws_iam_user_policy_attachment" "student_ec2_access" {
-  count       = "${length(var.students)}"
-  user        = "${var.students[count.index].name}"
-  policy_arn  = "${aws_iam_policy.student_ec2_access.arn}"
-  depends_on  = ["aws_iam_user.students"]
+  count       = length(var.students)
+  user        = var.students[count.index].name
+  policy_arn  = aws_iam_policy.student_ec2_access.arn
+  depends_on  = [aws_iam_user.students]
 }
 
 resource "aws_iam_user_policy_attachment" "student_credentials_access" {
-  count       = "${length(var.students)}"
-  user        = "${var.students[count.index].name}"
-  policy_arn  = "${aws_iam_policy.student_credentials_access.arn}"
-  depends_on  = ["aws_iam_user.students"]
+  count       = length(var.students)
+  user        = var.students[count.index].name
+  policy_arn  = aws_iam_policy.student_credentials_access.arn
+  depends_on  = [aws_iam_user.students]
 }
 
 resource "aws_iam_user_policy_attachment" "cloud9_user_access" {
-  count       = "${length(var.students)}"
-  user        = "${var.students[count.index].name}"
+  count       = length(var.students)
+  user        = var.students[count.index].name
   policy_arn  = "arn:aws:iam::aws:policy/AWSCloud9User"
-  depends_on  = ["aws_iam_user.students"]
+  depends_on  = [aws_iam_user.students]
 }
 
 resource "aws_iam_user_policy_attachment" "dynamodb_user_access" {
-  count       = "${length(var.students)}"
-  user        = "${var.students[count.index].name}"
+  count       = length(var.students)
+  user        = var.students[count.index].name
   policy_arn  = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-  depends_on  = ["aws_iam_user.students"]
+  depends_on  = [aws_iam_user.students]
 }
