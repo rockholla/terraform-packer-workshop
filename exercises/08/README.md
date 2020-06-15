@@ -108,30 +108,6 @@ my_map_values = {
     "Harold",
   ]
 }
-my_object_values = {
-  "ages" = [
-    12,
-    14,
-    10,
-  ]
-  "names" = [
-    "John",
-    "Susy",
-    "Harold",
-  ]
-}
-my_set_values = [
-  1,
-  2,
-  3,
-  4,
-  5,
-]
-my_tuple_values = [
-  "1",
-  2,
-  "3",
-]
 ```
 
 Let's look at each of the complex types individually and see what's actually going on in our `main.tf` file. Again, we're not creating any infrastructure in this exercise, merely seeing variables getting set, then outputs being constructed from these variable values. The way we're using these variables in outputs would apply to any other resource or use in your HCL.
@@ -154,32 +130,6 @@ output "my_list_values" {
 The list type is not new in 0.12, and works similarly as it did before. In our example here, however, we're setting a [type constraint](https://www.terraform.io/docs/configuration/types.html), so that our list can only contain string values. In our two output examples, we see first an example of accessing a particular list item value, as well as using the entire list.
 
 ```hcl
-variable "my_set" {
-  type      = set(number)
-  default   = [1, 2, 3, 4, 5]
-}
-...
-output "my_set_values" {
-  value = "${var.my_set}"
-}
-```
-
-Sets are kinda like lists, but have their differences. We discussed them, but play around with the definition in the HCL here and see if you can remember or identify what makes a set unique.
-
-```hcl
-variable "my_tuple" {
-  type      = tuple([string, number, string])
-  default   = ["1", 2, "3"]
-}
-...
-output "my_tuple_values" {
-  value = var.my_tuple
-}
-```
-
-My guess is that you'll probably use tuples the least of any of the types. But we get to see it in action here nonetheless. The key takeaway is that it's a list with mixed, strict type constraints.
-
-```hcl
 variable "my_map" {
   type      = map
   default   = {names: ["John", "Susy", "Harold"], ages: [12, 14, 10]}
@@ -192,20 +142,6 @@ output "my_map_values" {
 
 Maps are also not new in 0.12, and they work very similarly to how they did before, except that they now allow a type constraint
 for the related value(s). A map is just a collection of key/values.
-
-```hcl
-# How is this different than the map above?
-variable "my_object" {
-  type      = object({names: list(string), ages: list(number)})
-  default   = {names: ["John", "Susy", "Harold"], ages: [12, 14, 10]}
-}
-...
-output "my_object_values" {
-  value = var.my_object
-}
-```
-
-And finally the object type. Which is similar to map. But, can you identify the differences? Also, add some other outputs of your own to access specific values in the object, change the object structure to see how far you can go with setting up an object.
 
 ### Terraform Data and Reference
 
