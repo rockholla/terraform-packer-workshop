@@ -4,15 +4,15 @@ provider "aws" {
 }
 
 provider "aws" {
-  alias  = "ohio"
-  region = "us-east-2"
+  alias  = "california"
+  region = "us-west-1"
 }
 
 resource "aws_s3_bucket" "student_buckets" {
   count         = length(var.students)
   bucket        = "rockholla-di-${var.students[count.index].name}"
   acl           = "private"
-  provider      = aws.ohio
+  provider      = aws.california
   force_destroy = true
 }
 

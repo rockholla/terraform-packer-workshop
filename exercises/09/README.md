@@ -1,15 +1,10 @@
 # Exercise #9: Resource Counts and Conditional HCL
 
-The idea of "looping" or repeated resource capabilities in Terraform is one of the most encountered gotchas. 
-Declarative infrastructure tools and languages often require or encourage more explicit definition of things 
-rather than supporting logic where other languages might have an "easier" way of doing things. Nonetheless, 
-there's still a good deal you can accomplish via Terraform's `count` concept that mimicks the idea of loops 
-and creating multiple copies or versions of a single thing. 
+The idea of "looping" or repeated resource capabilities in Terraform is one of the most encountered gotchas. Declarative infrastructure tools and languages often require or encourage more explicit definition of things rather than supporting logic where other languages might have an "easier" way of doing things. Nonetheless, there's still a good deal you can accomplish via Terraform's `count` concept that mimicks the idea of loops and creating multiple copies or versions of a single thing.
 
 Modules, as we saw, are another key aspect of reusability in Terraform.
 
-But let's take a look at `count` in action for the sake of reusability and list of common infrastructure
-objects, and related logical support for the sake of dynamic resource management.
+But let's take a look at `count` in action for the sake of reusability and list of common infrastructure objects, and related logical support for the sake of dynamic resource management.
 
 Run the following in this directory
 
@@ -112,8 +107,7 @@ resource "aws_s3_bucket_object" "dynamic_file" {
 }
 ```
 
-So, there's a variable controlling the number of `dynamic_file` objects that will actually be created, let's look at the
-`variables.tf` file, and we see our `object_count` variable definition
+So, there's a variable controlling the number of `dynamic_file` objects that will actually be created, let's look at the `variables.tf` file, and we see our `object_count` variable definition
 
 ```hcl
 variable "object_count" {
@@ -123,8 +117,7 @@ variable "object_count" {
 }
 ```
 
-And it has a default value of *3*, so our `aws_s3_bucket_object` resource uses the `count` property to dynamically define the number
-of "copies" of this resource we'd like. This all adds up to our plan telling us that the following would be created:
+And it has a default value of *3*, so our `aws_s3_bucket_object` resource uses the `count` property to dynamically define the number of "copies" of this resource we'd like. This all adds up to our plan telling us that the following would be created:
 
 ```
 aws_s3_bucket_object.dynamic_file[0] will be created
@@ -134,8 +127,7 @@ aws_s3_bucket_object.dynamic_file[2] will be created
 
 ### Conditional HCL Resources
 
-The count parameter, now in combination with the `bool` type is particularly useful for conditionally including
-things in your ultimately built infrastructure. Let's look at our `main.tf` again to see an example
+The count parameter, now in combination with the `bool` type is particularly useful for conditionally including things in your ultimately built infrastructure. Let's look at our `main.tf` again to see an example
 
 ```hcl
 resource "aws_s3_bucket_object" "optional_file" {
@@ -146,9 +138,7 @@ resource "aws_s3_bucket_object" "optional_file" {
 }
 ```
 
-So, our `count   = "${var.include_optional_file ? 1 : 0}"` syntax says: if the `include_optional_file` variable is set to true, we
-want one instance of this object, otherwise we want 0. Could you think of another way to produce the same result? Hint: it's how
-you had to do it before the `bool` data type came around.
+So, our `count   = "${var.include_optional_file ? 1 : 0}"` syntax says: if the `include_optional_file` variable is set to true, we want one instance of this object, otherwise we want 0. Could you think of another way to produce the same result? Hint: it's how you had to do it before the `bool` data type came around.
 
 We see in our plan output
 
@@ -177,14 +167,12 @@ variable "include_optional_file" {
 }
 ```
 
-So, indeed our optional file/object would be created/maintained since we're using the default `include_optional_file=true`. Try 
-another plan, but with
+So, indeed our optional file/object would be created/maintained since we're using the default `include_optional_file=true`. Try another plan, but with
 
 ```
 terraform plan -var include_optional_file=false
 ```
 
-Is it what you expected? If you have a little extra time, play around more with count and other ways that you might achieve 
-conditional logic in HCL. Ask questions if you have them.
+Is it what you expected? If you have a little extra time, play around more with count and other ways that you might achieve conditional logic in HCL. Ask questions if you have them.
 
 Then, let's move on!

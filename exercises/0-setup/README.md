@@ -35,6 +35,7 @@ a Cloud9 server/environment set up where you'll run further exercises.
 sudo yum -y install jq git
 sudo pip install --upgrade pip
 sudo ln -s /usr/local/bin/pip /bin/pip
+# you can ignore errors running this last command
 sudo pip install --upgrade awscli
 ```
 

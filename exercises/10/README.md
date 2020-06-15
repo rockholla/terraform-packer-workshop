@@ -2,20 +2,16 @@
 
 By Default, Terraform will store the state for you infrastructure in a local file, but there's a problem with this:
 
-What if you work on a team where different people will run terraform at different times from different places? This 
-would mean you'd need to share your state file in some way. Some people have done it as encrypted local files in source 
-control, but this is generally not maintainable or scalable. So, enter the idea of central remote options for storing 
-your state files.
+What if you work on a team where different people will run terraform at different times from different places? This would mean you'd need to share your state file in some way. Some people have done it as encrypted local files in source control, but this is generally not maintainable or scalable. So, enter the idea of central remote options for storing your state files.
 
 Since this course is about Terraform in AWS specifically, let's look at a relevant option that Terraform provides: S3
 
-Storing Terraform state in an S3 bucket is as simple as making sure the bucket exists, and then defining an appropriate
-configuration in your Terraform HCL:
+Storing Terraform state in an S3 bucket is as simple as making sure the bucket exists, and then defining an appropriate configuration in your Terraform HCL. This is what a configuration looks like for using s3 instead of the local file system to store and manage your state:
 
 ```hcl
 terraform {
   backend "s3" {
-    bucket  = "REPLACE-WITH-YOUR-STATE-BUCKET-NAME"
+    bucket  = "some-bucket-where-state-will-be-stored"
     key     = "exercise-10/terraform.tfstate"
   }
 }
@@ -92,14 +88,9 @@ Outputs:
 state_bucket_name = rockholla-di-bane-20190623022126911700000001
 ```
 
-Now, before we move on, you may be asking yourself: so what about the state for this state bucket? And it's a good 
-question. In this case, we're just accepting that we're maintaining a local state for the bucket itself. There are a 
-number of different paths you can take here including just ensuring that the bucket exists manually. The general idea 
-is that whatever manages this state bucket, be it manual or automated, should be by itself, easily recreateable and 
-not buried in a bunch of other automation.
+Now, before we move on, you may be asking yourself: so what about the state for this state bucket? And it's a good question. In this case, we're just accepting that we're maintaining a local state for the bucket itself. There are a number of different paths you can take here including just ensuring that the bucket exists manually. The general idea is that whatever manages this state bucket, be it manual or automated, should be by itself, easily re-createable and not buried in a bunch of other automation.
 
-Copy the value of your `state_bucket_name` output from the output of your apply, we'll use it for setting the remote
-backend configuration.
+Copy the value of your `state_bucket_name` output from the output of your apply, we'll use it for setting the remote backend configuration.
 
 ### Now using our state bucket for the rest of our terraform
 
@@ -107,7 +98,7 @@ Now that our state bucket is there, we can actually start using it, so from this
 
 ```bash
 # get back to the root folder of this exercise
-cd ..
+cd ../
 terraform init -backend-config=backend.tfvars
 ```
 
@@ -123,11 +114,7 @@ bucket
 
 You'll want to enter the bucket name that was output from your `state-bucket` terraform run.
 
-Let's just focus on this slightly-different init command. It accepts backend configuration variables. The 
-terraform settings and backend configuration block in a .tf file **CANNOT** accept or process interpolations. We can,
-however, still parameterize this stuff. This is particularly useful for things like secrets or other secure stuff
-you might pass into backend configuration. You can store it temporarily outside of your infrastructure code and
-simply instruct Terraform to use these values.
+Let's just focus on this slightly-different init command. It accepts backend configuration variables. The terraform settings and backend configuration block in a .tf file **CANNOT** accept or process interpolations. We can, however, still parameterize this stuff. This is particularly useful for things like secrets or other secure stuff you might pass into backend configuration. You can store it temporarily outside of your infrastructure code and simply instruct Terraform to use these values.
 
 Now let's move on to our plan and apply
 
@@ -135,11 +122,7 @@ Now let's move on to our plan and apply
 terraform plan -out=plan.out
 ```
 
-For fun, we've thrown in an explicit saving of the plan to a file, and then applying that plan. Recent versions of
-Terraform have automated similar processes, so in most cases, just running `terraform apply` will ensure that it runs
-a plan and then asks you to accept that plan before continuing. This alternative method affords another way that was
-previously considered best practice and continues to be a good option for more-automated terraform execution scenarios
-like CI/CD pipelines for recording the plan artifact as an example.
+For fun, we've thrown in an explicit saving of the plan to a file, and then applying that plan. Recent versions of Terraform have automated similar processes, so in most cases, just running `terraform apply` will ensure that it runs a plan and then asks you to accept that plan before continuing. This alternative method affords another way that was previously considered best practice and continues to be a good option for more-automated terraform execution scenarios like CI/CD pipelines for recording the plan artifact as an example.
 
 The plan having been saved to the `plan.out` file, we can execute our apply to point to that plan
 
@@ -157,9 +140,7 @@ Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 
 ```
 
-Pretty similar outcome as far as the "infrastructure" is concerned. But, let's finish off by taking a closer look at the
-state since it now exists remotely. You can either head over the S3 area of the AWS console and navigate to your state bucket
-to look around, or you could just use the aws cli to look as well:
+Pretty similar outcome as far as the "infrastructure" is concerned. But, let's finish off by taking a closer look at the state since it now exists remotely. You can either head over the S3 area of the AWS console and navigate to your state bucket to look around, or you could just use the aws cli to look as well:
 
 ```bash
 aws s3 ls s3://[your s3 state bucket name]/exercise-10/
