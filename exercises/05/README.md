@@ -12,11 +12,12 @@ variable "region_alt" {
 }
 ```
 
-Then, add the new variable reference to `main.tf` just under the existing provider block.
+Then, add the new variable reference to `main.tf` in the existing provider stanza:
 
 ```hcl
 provider "aws" {
   version = "~> 2.0"
+  # the following is the line to add
   region = "${var.region_alt}"
 }
 ```
@@ -30,9 +31,7 @@ terraform show
 ```
 The above should show that you have a key pair `rockholla-di-[your student alias]` that was created. The terraform resource/state itself doesn't actually tell us what region where the key pair lives, but you could easily verify that it was created in the expected region by visiting the appropriate console location: [https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#KeyPairs:](https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#KeyPairs:)
 
-*NOTE:* that at the beginning of our course we set the `AWS_DEFAULT_REGION` environment variable in your Cloud9 environment.
-Along with this variable and the access key and secret key, terraform is able to use these environment variables for the AWS
-provider as defaults unless you override them in the HCL provider stanza.
+*NOTE:* that at the beginning of our course we set the `AWS_DEFAULT_REGION` environment variable in your Cloud9 environment. Along with this variable and the access key and secret key, terraform is able to use these environment variables for the AWS provider as defaults **unless you override them in the HCL provider stanza** which is exactly what we just did.
 
 We'll be looking more at using providers in other exercises as we move along.
 
