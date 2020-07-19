@@ -99,17 +99,12 @@ A checksum was created by our post-processor, so we're good to go. Let's move on
 
 ## Building a custom AMI in AWS
 
-Remember our first Terraform experiment for bringing up an Nginx server in AWS? We're going to use the rest of this exercise to do that same thing again. 
+Remember our first Terraform experiment for bringing up an web server in AWS? We're going to use the rest of this exercise to do that same thing again.
 
 Except, we want to create/pre-provision a custom AMI using Packer that will run what you need it to run instead of simply bringing up an EC2 instance and provisioning it at runtime. Bring this custom AMI up with Terraform to enable a fully-functioning web server when the EC2 instance is created.
 
 As a reminder on the few details of that previous exercise:
 
-* Provision this instance to install nginx
-* Make sure we can access nginx from the outside world
+* Provision this instance to install some web server
+* Make sure we can access the web server from the outside world
 * Use online docs for help, use each other, and I’m here too if you need!
-
-
-
-
-

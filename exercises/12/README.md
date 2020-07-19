@@ -12,7 +12,7 @@ Every type of builder will ultimately handle authentication to the build environ
 
 So, for our exercise, we use the environment variables we set in our Cloud9 environment back on day 1. Packer is able to pass those through to the builder to authenticate.
 
-Authentication allows Packer to talk to the AWS API to create the builder EC2 instance, configure necessary items in our AWS EC2 area for connecting, connecting, and finally creating the resulting AMI.
+Authentication allows Packer to talk to the AWS API to create the builder EC2 instance, configure necessary items in our AWS EC2 area for connecting, making the connection, and finally creating the resulting AMI.
 
 To see this more clearly, we'll go ahead and switch over to looking at the template we'll use...
 
@@ -68,13 +68,13 @@ Error initializing core: 1 error occurred:
 
 ```
 
-The built-in Packer validation has trapped the fact that we've note passed in a value for `username`. It's required per our template definition, so all we need to do is pass in a value for it. Pass the username that was provided to you for exercises:
+The built-in Packer validation has trapped the fact that we've note passed in a value for `username`. It's required per our template definition, so all we need to do is pass in a value for it. Pass the username/alias that was provided to you for exercises:
 
 ```bash
-$ packer build -var username=[provided username] ./template.json
+$ packer build -var username=[provided username/alias] ./template.json
 force-first-ami: output will be in this color.
 
-==> [provided username]-first-ami: Prevalidating any provided VPC information
+==> [provided username/alias]-first-ami: Prevalidating any provided VPC information
 ...
 ```
 
@@ -102,13 +102,13 @@ This tells Packer the type of builder to use
 "access_key": "{{user `aws_access_key`}}",
 "secret_key": "{{user `aws_secret_key`}}",
 ```
-This type of builder exposes these properties so that we can pass in credentials for authenticating to AWS. Again, the builder can determine configured credentials on the machine such as the environment variables directly or a AWS CLI profile.
+This type of builder exposes these properties so that we can pass in credentials for authenticating to AWS. Again, the builder can determine configured credentials on the machine such as the environment variables directly or an AWS CLI profile.
 
 ```json
 "region": "us-west-1",
 "source_ami": "ami-0dd655843c87b6930",
 ```
-This tells Packer that we want to spin up our build machine with this AMI as the base image. So, we'll build our custom/final AMI from this AMI. It happens to be a standard Ubuntu AMI in the us-west-1 region. This also, as it turns out, instructs AWS to create our final AMI in the us-west-1 region. It's worth noting that Packer has some ways to create identical AMIs in a number of regions at a time using a builder (one of which is [a copy feature](https://www.packer.io/docs/builders/amazon-ebs.html#ami_regions))
+This tells Packer that we want to spin up our build machine with this `source_ami` as the base image, the one to build upon. So, we'll build our custom/final AMI from this AMI. It happens to be a standard Ubuntu AMI in the us-west-1 region. `region` instructs AWS to create our final AMI in the us-west-1 region. It's worth noting that Packer has some ways to create identical AMIs in a number of regions at a time using a builder (one of which is [a copy feature](https://www.packer.io/docs/builders/amazon-ebs.html#ami_regions))
 
 ```json
 "instance_type": "t2.micro",
@@ -170,4 +170,3 @@ We can identify a number of things from this output, importantly:
 * And we can then see a number of different steps to automate stopping the instance, creating the AMI from the stopped instance's disk, and cleaning up items that were created like the security group and key pair
 
 If you'd like to verify that your AMI was successfully created, you can do so from the AWS EC2 console. Once you're satisfied, you should be ready to move on. Delete your created AMI through the console if you have time, as it will help your instructor later on :)
-

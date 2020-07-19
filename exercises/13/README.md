@@ -4,7 +4,7 @@ We had a first Packer exercise with the most basic template possible, a build cr
 
 ## The `file` builder
 
-The `file` builder is one that is provided by Packer, and is most useless except for being able to debug. And, maybe most importantly, to debug quickly. In most cases, Packer is all about trying to create artifacts by spinning up full Virtual Machines, provisioning those machines, and then creating the artifact from those machines. This means that errors can be costly at times. Maybe you get part of the way through your build, only to discover you made a simple mistake in how you set up your variables or some other part of your template.
+The `file` builder is one that is provided by Packer, and isn't very useful except for being able to debug. And, maybe most importantly, to debug quickly. In most cases, Packer is all about trying to create artifacts by spinning up full Virtual Machines, provisioning those machines, and then creating the artifact from those machines. This means that errors can be costly at times. Maybe you get part of the way through your build, only to discover you made a simple mistake in how you set up your variables or some other part of your template, provisioning scripts or similar.
 
 The primary practical use for the `file` provisioner is to debug post-processors without having to wait to get to them.
 
@@ -138,7 +138,7 @@ Build 'file' finished.
 ==> Builds finished. The artifacts of successful builds are:
 --> file: Stored file: ./artifact-functions.txt
 Patricks-MacBook-Pro:13 patrickforce$ cat ./artifact-functions.txt
-VA-1
+VAR-1
 ```
 
 If we look at the contents of the template:
@@ -171,10 +171,3 @@ I encourage you to search for alternate ways to solve this same problem during o
 If you have time, start playing around with the other Packer CLI commands we discussed against our `template.json` here, see what you get, what other questions you might be able to spark by starting to use them.
 
 And with that, we should be good to move on. This exercise was all about tinkering, which is an important part of our work. It introduced us to provisioners for the first time. We'll spend the next section of the course diving further into both provisioners and post-processors.
-
-
-
-
-
-
-
