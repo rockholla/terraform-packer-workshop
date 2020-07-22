@@ -1,0 +1,41 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "username": null
+  },
+  "builders": [
+    {
+      "name": "{{user `username`}}-experiment-ami",
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "us-west-1",
+      "source_ami": "ami-0dd655843c87b6930",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "{{user `username`}}-experiment-ami"
+    },
+    {
+      "type": "docker",
+      "image": "ubuntu",
+      "commit": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "common-provisioner.sh"
+    },
+    {
+      "type": "shell",
+      "script": "docker-builder-only-provisioner.sh"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "docker-save",
+      "path": "experiment-docker-image.tar"
+    }
+  ]
+}
