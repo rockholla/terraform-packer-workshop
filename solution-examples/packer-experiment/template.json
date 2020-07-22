@@ -25,11 +25,13 @@
   "provisioners": [
     {
       "type": "shell",
-      "script": "common-provisioner.sh"
+      "script": "common-provisioner.sh",
+      "execute_command": "sudo -S bash -c '{{ .Vars }} {{ .Path }}'"
     },
     {
       "type": "shell",
-      "script": "docker-builder-only-provisioner.sh"
+      "script": "docker-builder-only-provisioner.sh",
+      "execute_command": "sudo -S bash -c '{{ .Vars }} {{ .Path }}'"
     }
   ],
   "post-processors": [
