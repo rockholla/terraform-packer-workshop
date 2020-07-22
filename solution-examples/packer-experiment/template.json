@@ -37,7 +37,8 @@
   "post-processors": [
     {
       "type": "docker-save",
-      "path": "experiment-docker-image.tar"
+      "path": "experiment-docker-image.tar",
+      "only": ["docker"]
     }
   ]
 }
