@@ -2,6 +2,11 @@
 
 values=$(terraform output -json)
 
+if [ -z "$1" ]; then
+  echo "First argument to this script should be one of: introduction, intermediate"
+  echo "in order to determine how to output the user values"
+fi
+
 let i=0
 for username in $(echo $values | jq -r '.students.value[].name'); do
   echo "Instructions repo:     https://github.com/rockholla/terraform-packer-workshop"
@@ -10,7 +15,11 @@ for username in $(echo $values | jq -r '.students.value[].name'); do
   password=$(echo $values | jq -r '.passwords.value[]['"$i"']' | base64 --decode | gpg -dq)
   echo "AWS Console Password:  $password"
   region=$(echo $values | jq -r '.students.value['"$i"'].region')
-  echo "Exercise 11 Region:    $region"
+  if [[ "$1" == "introduction" ]]; then
+    echo "Exercise 11 Region:    $region"
+  elif [[ "$1" == "intermediate" ]]; then
+    echo "TODO for region"
+  fi
   echo "Instructor email:      patrick+di@rockholla.org"
   echo ""
   echo ""

@@ -1,6 +1,6 @@
 # Exercise #5: Interacting with Providers
 
-Providers are plugins that Terraform uses to understand various external APIs and cloud providers.  Thus far in this workshop, we've used the AWS provider. In this exercise, we're going to modify the AWS provider we've been using to create our bucket in a different region.
+Providers are plugins that Terraform uses to understand various external APIs and cloud providers.  Thus far in this workshop, we've used the AWS provider. In this exercise, we're going to modify the AWS provider we've been using to create a key pair in a different region.
 
 ### Add the second provider
 

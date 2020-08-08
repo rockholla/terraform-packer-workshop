@@ -68,7 +68,7 @@ Error initializing core: 1 error occurred:
 
 ```
 
-The built-in Packer validation has trapped the fact that we've note passed in a value for `username`. It's required per our template definition, so all we need to do is pass in a value for it. Pass the username/alias that was provided to you for exercises:
+The built-in Packer validation has trapped the fact that we've not passed in a value for `username`. It's required per our template definition, so all we need to do is pass in a value for it. Pass the username/alias that was provided to you for exercises:
 
 ```bash
 $ packer build -var username=[provided username/alias] ./template.json
