@@ -21,5 +21,5 @@ data "template_file" "config" {
 }
 
 output "template_rendered" {
-  value = "${data.template_file.config.rendered}"
+  value = data.template_file.config.rendered
 }

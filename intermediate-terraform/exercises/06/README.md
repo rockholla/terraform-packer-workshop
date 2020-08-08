@@ -80,48 +80,125 @@ So, we can use our secondary provider accordingly along with our default one, bu
 
 The `provider = aws.secondary_region` within the `aws_key_pair` resource is called a meta-argument, or some argument that terraform core defines common to all resource types. Any resource type supports this argument, instructing it to use an alternate provider config instead of the default one setup up by the default provider block for that resource type. More on meta-arguments tomorrow and we'll work with some others that Terraform exposes common to all resources, data sources, etc.
 
-## Hybrid cloud project structures, managing projects that are concerned with many providers
+Let's go ahead and apply this configuration and see what happens
 
-We're not going to get hands-on with this section, rather talk about some things conceptually, since this deals more with concerns at an architectural level.
+```
+$ terraform apply
+var.student_alias
+  Your student alias
 
-Honestly, the most appropriate general approach to solving the considerations of this section are splitting up concerns into modules and making projects less monolithic. Let's look at an example project:
+  Enter a value: force
 
-The project would be one that, say, manages resources of all the following types:
 
-* AWS EC2
-* AWS IAM
-* AWS RDS
-* AWS DynamoDB
-* On-prem MySQL
-* On-prem Web servers via a custom provider
-* Azure VMs
-* Google Cloud VMs
-* Google Cloud IAM
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  + create
 
-Now, putting all of these concerns into a single project should immediately raise red flags. How might we split this up to distribute maintenance responsibilities and keeping efforts isolated and limited across teams? There are obviously dozens if not endless approaches, but let me present one based on a hypothetical organizational structure:
+Terraform will perform the following actions:
 
-The teams:
-* **Compute Ops and Admins**: those in charge of managing compute resources, so those things that are standard VMs, web servers, etc.
-* **DB Ops and Admins**: the team managing database-related resources
-* **Security Ops and Admins**: managing resources related to security both on-prem and in the cloud
-* **Integrations Team**: defining and implementing what makes up a given system, set of systems for the org, environment-wide concerns, etc.
+  # aws_key_pair.my_key_pair will be created
+  + resource "aws_key_pair" "my_key_pair" {
+      + arn         = (known after apply)
+      + fingerprint = (known after apply)
+      + id          = (known after apply)
+      + key_name    = "rockholla-di-force"
+      + key_pair_id = (known after apply)
+      + public_key  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41 force+di@rockholla.org"
+    }
 
-So, with this team structure, we might assign responsibility like the following. Image each team managing 1 or many modules to aide the integrations team in wiring it all up quite easily:
+  # aws_key_pair.my_key_pair_secondary_region will be created
+  + resource "aws_key_pair" "my_key_pair_secondary_region" {
+      + arn         = (known after apply)
+      + fingerprint = (known after apply)
+      + id          = (known after apply)
+      + key_name    = "rockholla-di-force"
+      + key_pair_id = (known after apply)
+      + public_key  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41 force+di@rockholla.org"
+    }
 
-* **Compute Ops and Admins**
-    * AWS EC2
-    * On-prem Web servers
-    * Azure VMs
-    * Google Cloud VMs
-* **DB Ops and Admins**
-    * AWS RDS
-    * AWS DynamoDB
-    * On-prem MySQL
-* **Security Ops and Admins**
-    * AWS IAM
-    * Google Cloud IAM
+Plan: 2 to add, 0 to change, 0 to destroy.
 
-Now, the **Integrations Team** needs only piece together one or many simply projects to pull in and use the modules developed and made available by those other teams. You hope the interface is simple, and the modules are easy to implement. That's the goal, and if you do it right, you've turned something quite complex into a manageable division of responsibility, labor, and maintenance.
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+aws_key_pair.my_key_pair: Creating...
+aws_key_pair.my_key_pair_secondary_region: Creating...
+aws_key_pair.my_key_pair: Creation complete after 0s [id=rockholla-di-force]
+aws_key_pair.my_key_pair_secondary_region: Creation complete after 0s [id=rockholla-di-force]
+
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+```
+
+Great, both of our key pair resources were created. Though we don't have clear indication of the different regions where these key pairs were created from the resource/provider output here, we can be pretty confident that they are indeed in different regions, otherwise AWS would've given us an error attempting to create two key names of `rockholla-di-[student-alias]` in the same region. For fun though, let's see if we can find out any more info, maybe see if we can see the region for these resources from state:
+
+```
+$ terraform state pull
+{
+  "version": 4,
+  "terraform_version": "0.12.29",
+  "serial": 0,
+  "lineage": "00be34b3-000f-1710-d00d-647d82ee5a6d",
+  "outputs": {},
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "aws_key_pair",
+      "name": "my_key_pair",
+      "provider": "provider.aws",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-west-1:946320133426:key-pair/rockholla-di-force",
+            "fingerprint": "d7:ff:a6:63:18:64:9c:57:a1:ee:ca:a4:ad:c2:81:62",
+            "id": "rockholla-di-force",
+            "key_name": "rockholla-di-force",
+            "key_name_prefix": null,
+            "key_pair_id": "key-09a95df5759e342c2",
+            "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41 force+di@rockholla.org",
+            "tags": null
+          },
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_key_pair",
+      "name": "my_key_pair_secondary_region",
+      "provider": "provider.aws.secondary_region",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-2:946320133426:key-pair/rockholla-di-force",
+            "fingerprint": "d7:ff:a6:63:18:64:9c:57:a1:ee:ca:a4:ad:c2:81:62",
+            "id": "rockholla-di-force",
+            "key_name": "rockholla-di-force",
+            "key_name_prefix": null,
+            "key_pair_id": "key-0f3a754df2ad5f5fe",
+            "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41 force+di@rockholla.org",
+            "tags": null
+          },
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
+        }
+      ]
+    }
+  ]
+}
+```
+
+Ah, so our arns for the key pairs verify the region for each key!
+
+**Please destroy before moving to the next section**
+
+```
+$ terraform destroy
+...
+```
 
 ## Using the Template provider
 
@@ -213,9 +290,7 @@ template_rendered = {
 }
 ```
 
-Depending on the template structure, Terraform may parse and render structured data, or just a string. We can see in this case, that we actually see Terraform rendering something of a structured data item as an output. When you pass this same thing to other arguments of Terraform resources that accept only string. Say, user-data for an ec2-instance, Terraform will type-convert, and you don't need to worry about it.
-
-We see quite a bit of the power of the template provider here though. Know that it exists, and use it.
+Depending on the template structure, Terraform may parse and render structured data, or just a string. We can see in this case, that we actually see Terraform rendering something of a structured data item as an output. When you pass this same thing to other arguments of Terraform resources that accept only string. Say, user-data for an ec2-instance, Terraform will type-convert and handle that gracefully.
 
 ## Best practices related to providers and modules
 
@@ -228,3 +303,48 @@ For projects using modules within modules within modules that only care about a 
 Obviously, a given module, and the way that it's written may require some version constraint of a provider. The above does not limit this. And a new concept to look at related to this is the root `terraform` block [`required_providers`](https://www.terraform.io/docs/configuration/terraform.html#specifying-required-provider-versions) argument.
 
 As an example, let's look at an official, community provided module that clarifies this point. The [terraform-aws-vpc module](https://github.com/terraform-aws-modules/terraform-aws-vpc) defines [something at the terraform block level that tells any project using this module that they must be using the aws provider, and that project's definition of the provider either implicitly, or explicitly passed in must match the version constraint `~-> 2.57`](https://github.com/terraform-aws-modules/terraform-aws-vpc/blob/master/versions.tf). Projects using this module can still either implicitly or explicitly pass in the AWS provider configuration they define. The module-level terraform configuration block will halt any parent project using the module dependent upon the parent project provider configuration, just as it would halt if the terraform CLI version being used was not acceptable.
+
+## Hybrid cloud project structures, managing projects that are concerned with many providers
+
+We're not going to get hands-on with this section, rather talk about some things conceptually, since this deals more with concerns at an architectural level.
+
+Honestly, the most appropriate general approach to solving the considerations of this section are splitting up concerns into modules and making projects less monolithic. Let's look at an example project:
+
+The project would be one that, say, manages resources of all the following types:
+
+* AWS EC2
+* AWS IAM
+* AWS RDS
+* AWS DynamoDB
+* On-prem MySQL
+* On-prem Web servers via a custom provider
+* Azure VMs
+* Google Cloud VMs
+* Google Cloud IAM
+
+Now, putting all of these concerns into a single project should immediately raise red flags. How might we split this up to distribute maintenance responsibilities and keeping efforts isolated and limited across teams? There are obviously dozens if not endless approaches, but let me present one based on a hypothetical organizational structure:
+
+The teams:
+* **Compute Ops and Admins**: those in charge of managing compute resources, so those things that are standard VMs, web servers, etc.
+* **DB Ops and Admins**: the team managing database-related resources
+* **Security Ops and Admins**: managing resources related to security both on-prem and in the cloud
+* **Integrations Team**: defining and implementing what makes up a given system, set of systems for the org, environment-wide concerns, etc.
+
+So, with this team structure, we might assign responsibility like the following. Image each team managing 1 or many modules to aide the integrations team in wiring it all up quite easily:
+
+* **Compute Ops and Admins**
+    * AWS EC2
+    * On-prem Web servers
+    * Azure VMs
+    * Google Cloud VMs
+* **DB Ops and Admins**
+    * AWS RDS
+    * AWS DynamoDB
+    * On-prem MySQL
+* **Security Ops and Admins**
+    * AWS IAM
+    * Google Cloud IAM
+
+Now, the **Integrations Team** needs only piece together one or many simply projects to pull in and use the modules developed and made available by those other teams. You hope the interface is simple, and the modules are easy to implement. That's the goal, and if you do it right, you've turned something quite complex into a manageable division of responsibility, labor, and maintenance.
+
+That's it for this exercise. A little more reading and digesting on this one as opposed to hands-on. But, it's worth it to take the time for these things as we advance in Terraform and tech knowledge generally.
