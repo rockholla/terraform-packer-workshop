@@ -1,3 +1,7 @@
+variable "unique_prefix" {
+  type = string
+}
+
 variable "table_name" {
   type = string
 }
