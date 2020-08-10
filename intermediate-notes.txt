@@ -6,16 +6,15 @@ exercises:
 * Looking deeper into state: planning, querying, show, mv, rm
 * workspaces
 * complex module usage: versioning, pulling, using the same module multiple times, nested modules, cross-module deps
-
-
-* destroying only part of your infrastructure: remove, taint (untaint), destroy -target
-* importing
-* approaches to rolling back
-* Looking depper into state: refreshing, approaches to drift and infrastructure manual changes, locking via DynamoDB, force-unlock
 * debugging terraform: TF_LOG, TF_LOG_PATH
-* counts based on lists
+* A refresh on provisioners: they are a last resort, but often still a required piece of functionality. Packer, cloud-init as alternatives
+* importing
+* terraform refresh
+* destroying only part of your infrastructure: remove, taint (untaint), destroy -target
 * functions and the console
 
+* approaches to rolling back
+* Looking depper into state: refreshing, approaches to drift and infrastructure manual changes, locking via DynamoDB, force-unlock
 * automating and centralizing terraform ops: TF_IN_AUTOMATION, -input=false, spinnaker and terraform
 
 
