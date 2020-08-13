@@ -32,8 +32,8 @@ Initializing provider plugins...
 
 Warning: Interpolation-only expressions are deprecated
 
-  on main.tf line 26, in resource "aws_key_pair" "my_key_pair":
-  26:     in_vpc = "${local.vpc_id_tag}"
+  on main.tf line 10, in provider "aws":
+  10:   region  = "${var.region}" # we're using 0.12, and newer versions will warn us if we write this "${var.region}" instead of var.region
 
 Terraform 0.11 and earlier required all non-constant expressions to be
 provided via interpolation syntax, but this pattern is now deprecated. To
@@ -44,8 +44,6 @@ Template interpolation syntax is still used to construct strings from
 expressions when the template includes multiple interpolation sequences or a
 mixture of literal strings and interpolations. This deprecation applies only
 to templates that consist entirely of a single interpolation sequence.
-
-(and one more similar warning elsewhere)
 
 Terraform has been successfully initialized!
 
@@ -72,7 +70,7 @@ One of `terraform init`'s jobs is to identify modules defined in configuration s
 module "security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "3.13.0"
-  name = "${var.student_alias}"
+  name = var.student_alias
   vpc_id = "${data.aws_vpc.default.id}"
 }
 ```
@@ -109,8 +107,8 @@ Along with identifying and downloading modules, `init` also identifies providers
 ```
 provider "aws" {
   version = "~> 2.0" # this version constraint says that we need to use the most recent 2.x version of the provider
-  region  = var.region # we're using 0.12, and newer versions will warn us if we write this "${var.region}" instead of var.region
-                       # but 0.11 and versions before don't support the syntax here
+  region  = "${var.region}" # we're using 0.12, and newer versions will warn us if we write this "${var.region}" instead of var.region
+                            # but 0.11 and versions before don't support the syntax here
 }
 ```
 
@@ -132,8 +130,8 @@ Next, we see some output from our `init` command that implies that `init` does s
 ```
 Warning: Interpolation-only expressions are deprecated
 
-  on main.tf line 26, in resource "aws_key_pair" "my_key_pair":
-  26:     in_vpc = "${local.vpc_id_tag}"
+  on main.tf line 10, in provider "aws":
+  10:   region  = "${var.region}" # we're using 0.12, and newer versions will warn us if we write this "${var.region}" instead of var.region
 
 Terraform 0.11 and earlier required all non-constant expressions to be
 provided via interpolation syntax, but this pattern is now deprecated. To
@@ -146,7 +144,7 @@ mixture of literal strings and interpolations. This deprecation applies only
 to templates that consist entirely of a single interpolation sequence.
 ```
 
-This will be a common warning that will appear in any project where you're transitioning from Terraform <=0.11 to >= 0.12. HCL and Terraform 0.12 have deprecated a number of syntactical approaches in previous versions. One of them being the above, where 0.12 wants you to use string interpolation only when you're actually interpolating. In the case of `"${local.vpc_id_tag}"`, we're really only dealing with a variable value, nothing that needs to be concatenated, interpolated, etc. So, we'd want to update it to `local.vpc_id_tag` while working with 0.12. Let's do that, and also update any others you find like this that need fixing, and then re-run init:
+This will be a common warning that will appear in any project where you're transitioning from Terraform <=0.11 to >= 0.12. HCL and Terraform 0.12 have deprecated a number of syntactical approaches in previous versions. One of them being the above, where 0.12 wants you to use string interpolation only when you're actually interpolating. In the case of `"${var.region}"`, we're really only dealing with a variable value, nothing that needs to be concatenated, interpolated, etc. So, we'd want to update it to `var.region` while working with 0.12. Let's do that, and also update any others you find like this that need fixing, and then re-run init:
 
 ```
 $ terraform init
