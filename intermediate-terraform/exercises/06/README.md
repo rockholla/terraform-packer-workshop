@@ -78,7 +78,7 @@ and, as a refresher, we're not setting the region on this default provider block
 
 So, we can use our secondary provider accordingly along with our default one, but we need to tell resources or modules to use this provider instead of our default.
 
-The `provider = aws.secondary_region` within the `aws_key_pair` resource is called a meta-argument, or some argument that terraform core defines common to all resource types. Any resource type supports this argument, instructing it to use an alternate provider config instead of the default one setup up by the default provider block for that resource type. More on meta-arguments tomorrow and we'll work with some others that Terraform exposes common to all resources, data sources, etc.
+The `provider = aws.secondary_region` within the `aws_key_pair` resource is called a meta-argument, or some argument that terraform core defines common to all resource types. Any resource types support this argument, instructing it to use an alternate provider config instead of the default one setup up by the default provider block for that resource type. I encourage you to look at and experiment more with meta arguments [for resources](https://www.terraform.io/docs/configuration/resources.html#meta-arguments), [data sources](https://www.terraform.io/docs/configuration/data-sources.html#meta-arguments), and [modules](https://www.terraform.io/docs/configuration/modules.html#other-meta-arguments) during experimentation time today.
 
 Let's go ahead and apply this configuration and see what happens
 
@@ -231,7 +231,7 @@ commands will detect it and remind you to do so if necessary.
 So, we've downloaded the template provider plugin, just like we've done so for the AWS one. They're all just plugins. And depending on our project we may or may not need them. For the template one we've got it locally:
 
 ```
-$ ls -la .terraform/plugins/darwin_amd64/
+$ ls -la .terraform/plugins/linux_amd64/
 total 46168
 drwxr-xr-x  4 patrickforce  staff       128 Aug  7 20:39 .
 drwxr-xr-x  3 patrickforce  staff        96 Aug  7 20:39 ..
@@ -272,7 +272,7 @@ output "template_rendered" {
 ```
 
 
-We have some input variables, they get passed in to the template, and rendered accordingly to produced a string. In most cases, this sort of thing is used for things like `aws_instance` provider ec2 instance user-data. So, you can render templated-muti-string-content for other things to ingest.
+We have some input variables, they get passed in to the template, and rendered accordingly to produce a string. In most cases, this sort of thing is used for resources like `aws_instance` and it's [user_data argument](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance#user_data). So, you can render templated-muti-string-content for other things to ingest.
 
 Let's look at it as as standard terraform output nonetheless...
 
@@ -330,7 +330,7 @@ The teams:
 * **Security Ops and Admins**: managing resources related to security both on-prem and in the cloud
 * **Integrations Team**: defining and implementing what makes up a given system, set of systems for the org, environment-wide concerns, etc.
 
-So, with this team structure, we might assign responsibility like the following. Image each team managing 1 or many modules to aide the integrations team in wiring it all up quite easily:
+So, with this team structure, we might assign responsibility like the following. Image each team managing 1 or many modules to aid the integrations team in wiring it all up quite easily:
 
 * **Compute Ops and Admins**
     * AWS EC2
