@@ -115,7 +115,7 @@ provider "aws" {
 `terraform init` sees this provider block defined with a version constraint of `version = "~> 2.0"` and knows that it needs to go get the AWS provider matching this version constraint if it's not already available locally. `Downloading plugin for provider "aws" (hashicorp/aws) 2.70.0...` from the logs indicates that it found the version it needs and is downloading it. This provider, or plugin is also pulled into the `.terraform` directory:
 
 ```
-$ ls -la .terraform/plugins/darwin_amd64/
+$ ls -la .terraform/plugins/linux_amd64/
 total 371144
 drwxr-xr-x  4 patrickforce  staff        128 Aug  7 07:45 .
 drwxr-xr-x  3 patrickforce  staff         96 Aug  7 07:45 ..
@@ -248,7 +248,7 @@ module "security_group" {
 
 our first block, or stanza is a data source, and one that's going to query the AWS API by way of the AWS provider that our `init` command downloaded. We're using a provider-defined data source called `aws_vpc`. We want to query to get info about a VPC that _already exists_ in our AWS. In this case the default VPC for the region as configured in our AWS provider block.
 
-Once We can then reference the VPC's ID in other places. And we see that happen as we're setting a local variable:
+We can then reference the VPC's ID in other places. And we see that happen as we're setting a local variable:
 
 ```
 locals {
@@ -387,5 +387,7 @@ output "eip_public_ip" {
 ```
 
 Outputs are useful pieces of data to come out of a particular Terraform project or module. In this case, we're referencing a value that was filled in upon creating our AWS elastic IP resource. AWS internally created that resource and assigned a public IP to it. We can reference that output or attribute of the resource, and pass it out of our project as well. This particular example might be useful if you have other processes or other projects after this one that needs this IP to, say, update DNS records.
+
+Notice that 0.12 didn't give us a warning for a value contained within `"${..}"` for outputs.
 
 That's it for this refresher exercise. We won't actually apply any of this configuration.
