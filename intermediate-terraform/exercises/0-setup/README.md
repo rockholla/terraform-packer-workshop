@@ -44,8 +44,8 @@ sudo pip install --upgrade awscli
 Run these commands in your cloud9 IDE terminal window to install Terraform
 
 ```bash
-curl -O https://releases.hashicorp.com/terraform/0.12.26/terraform_0.12.26_linux_amd64.zip
-sudo unzip terraform_0.12.26_linux_amd64.zip -d /usr/bin/
+curl -O https://releases.hashicorp.com/terraform/0.12.29/terraform_0.12.29_linux_amd64.zip
+sudo unzip terraform_0.12.29_linux_amd64.zip -d /usr/bin/
 ```
 
 Then test to ensure it was installed properly.
