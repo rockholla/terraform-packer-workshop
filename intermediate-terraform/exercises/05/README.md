@@ -23,7 +23,7 @@ Even without knowing you're using a workspace, you always are in terraform. One 
 ```
 $ terraform workspace show
 default
-$ terraform list
+$ terraform workspace list
 * default
 
 ```
@@ -84,7 +84,7 @@ $ terraform init
 ...
 ```
 
-A normal init operation, no different really in the context of isolated workspaces since modules used, plugins used, etc. will be common across all workspaces at the source level.
+A normal init operation, no different really in the context of isolated workspaces since modules used, providers/plugins used, etc. will be common across all workspaces at the source level and will go into our `.terraform` directory.
 
 ```
 $ terraform plan
@@ -181,6 +181,7 @@ drwxr-xr-x  3 patrickforce  staff    96 Aug  7 17:38 ..
 -rw-r--r--  1 patrickforce  staff  1311 Aug  7 17:39 terraform.tfstate
 ```
 
+Note that this `terraform.tfstate.d` directory would be stored in our remote backend if we were using a remote state backend. For the sake of being able to work with and see this for potentially the first time, we're using local state.
 
 Time to switch workspaces and test some further things out. Let's switch to a new `prod` workspace
 
@@ -194,7 +195,7 @@ so if you run "terraform plan" Terraform will not see any existing state
 for this configuration.
 ```
 
-We've created and switched to this new workspace, so we should simply be able to run another apply to create entirely new infrastructure from scratch with a branch new state file, and a non-conflicting key pair name in AWS since it's name/identifer will be suffixed with our unique workspace name:
+We've created and switched to this new workspace, so we should simply be able to run another apply to create entirely new infrastructure from scratch with a brand new state file, and a non-conflicting key pair name in AWS since it's name/identifer will be suffixed with our unique workspace name:
 
 
 ```
