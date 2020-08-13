@@ -140,7 +140,7 @@ Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
 string_var = 20
 ```
 
-Hmm, no error, why is that? Well, the string data type really being one of the more foundational, and type conversion can happen for just about value you pass in via the command line, so even something like the following works:
+Hmm, no error, why is that? Well, the string data type really being one of the more foundational, and type conversion can happen for just about any value you pass in via the command line, so even something like the following works:
 
 ```
 $ terraform apply -var string_var=[1,2,3]
