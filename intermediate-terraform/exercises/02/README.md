@@ -182,7 +182,7 @@ And we'll have an updated look at our `.terraform` directory and its contents:
 .terraform/
 ├── plugin_path
 ├── plugins
-│   └── darwin_amd64
+│   └── linux_amd64
 │       └── lock.json
 └── terraform.tfstate
 ```
