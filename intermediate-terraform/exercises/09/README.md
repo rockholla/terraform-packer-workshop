@@ -1,6 +1,6 @@
 # Exercise 9: Provisioners
 
-We don't want to use provisioners unless we have to. And there are many cases where you're still going to be required to use them, so let's make sure we do know
+We don't want to use provisioners unless we have to. And there are many cases where you're still going to be required to use them, so let's make sure we do know how to do it.
 
 ## A look at the different types of provisioners available to us via Terraform out-of-the-box
 
@@ -36,7 +36,7 @@ resource "aws_instance" "web_server" {
 
 Looking at this example, let's make sense of all the parts
 
-The resource itself, a simply AWS EC2 instance. We're spinning it up in a normal Terraform way. Once the instance is up, we'll run the `provisioner` block within. In this case, it's a `local-exec` provisioner, so it's going to execute the command, `ansible-playbook -i ${self.public_ip} ./ansible/web-server.yaml` on the machine where we're executing Terraform. `${self.public_ip}` will be expanded to contain the value of the EC2 instance's public IP, and execute the `./ansible/web-server.yaml` playbook against that server remotely.
+The resource itself, an AWS EC2 instance. We're spinning it up in a normal Terraform way. Once the instance is up, we'll run the `provisioner` block within. In this case, it's a `local-exec` provisioner, so it's going to execute the command, `ansible-playbook -i ${self.public_ip} ./ansible/web-server.yaml` on the machine where we're executing Terraform. `${self.public_ip}` will be expanded to contain the value of the EC2 instance's public IP, and execute the `./ansible/web-server.yaml` playbook against that server remotely.
 
 In reality, there are a few additional concerns with a provisioning setup like this:
 
@@ -144,9 +144,9 @@ resource "aws_instance" "server" {
 
 First, note that we're using a data source to query for the AMI ID to use within the region. AWS has different AMI IDs for the same machine types dependent on the region where you're creating instances. So, this data source query is a useful one when using Terraform for AWS and EC2.
 
-A few others things to note are that we're creating a security group or firewall rule to attach to our instance. This rule says that we'll allow SSH/port 22 traffic into the instance from anywhere, and actually all traffic out as well since some of our install tasks will be installing packages to be pulled in from public locations. We also need to create a key that will be assigned to the instance, and use this key within the `provisioner` `connection` blocks. All of this being necessary for Terraform's internal provisioner process to be able to connect from the outside, and have a key for doing so. Another common pattern here would be to pass in an ssh key instead of having Terraform manage the TLS key itself.
+A few other things to note are that we're creating a security group or firewall rule to attach to our instance. This rule says that we'll allow SSH/port 22 traffic into the instance from anywhere, and actually all traffic out as well since some of our install tasks will be installing packages to be pulled in from public locations. We also need to create a key that will be assigned to the instance, and use this key within the `provisioner` `connection` blocks. All of this being necessary for Terraform's internal provisioner process to be able to connect from the outside, and have a key for doing so. Another common pattern here would be to pass in an ssh key instead of having Terraform manage the TLS key itself.
 
-They main thing we want to look at for this exercise is the actual AWS instance resource, and specifically the provisioner blocks.
+The main thing we want to look at for this exercise is the actual AWS instance resource, and specifically the provisioner blocks.
 
 We can have multiple provisioners in a resource.  In this case, we're including one that will first copy in our `provisioner.sh` script from our project. This file provisioner copies up that script to the `tmp` location on the EC2 instance once that instance is running and Terraform can connect to it.
 
@@ -173,7 +173,7 @@ resource "aws_instance" "server" {
 
 As it would do everything we're doing with the file approach. It's helpful to see the alternatives though.
 
-Let's see what that looks like from a terraform apply perspective. First, let's initialize our project.
+Let's see what our alternative looks like from a terraform apply perspective. First, let's initialize our project.
 
 ```
 $ terraform init -backend-config=./backend.tfvars -backend-config=bucket=rockholla-di-[student-alias]
