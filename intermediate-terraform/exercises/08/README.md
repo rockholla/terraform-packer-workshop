@@ -171,7 +171,22 @@ The provider provider.aws does not support resource type
 "aws_invalid_resource_type".
 ```
 
-Pretty helpful even with this log level, should be pretty easy for us to identify the problem in this simple example scenario, but of course the context won't always be this clear. So, let's turn on `TRACE` logging and see what we can see
+Next, let's just revisit `terraform validate`. It's another root subcommand of the Terraform CLI and gives us the ability to validate our code in isolation from other commands. We talked about `terraform init` being able to do some syntax checking. `terraform validate` goes one step further to make sure that things like our resource definitions are valid:
+
+```
+$ terraform validate
+Error: Invalid resource type
+
+  on main.tf line 9, in resource "aws_invalid_resource_type" "name":
+   9: resource "aws_invalid_resource_type" "name" {
+
+The provider provider.aws does not support resource type
+"aws_invalid_resource_type".
+```
+
+The exact same output we got from plan. This suggests that plan also runs just what `terraform validate` does, and this is indeed true. The separation of this validation into a separate command can be useful in certain workflows, especially automated ones that are focused on failing fast and with distinct gates or stages.
+
+Whether it comes from `validate` or `plan`, helpful output even with this log level, should be pretty easy for us to identify the problem in this simple example scenario, but of course the context won't always be this clear. So, let's turn on `TRACE` logging and see what we can see
 
 ```
 $ TF_LOG=TRACE terraform plan
