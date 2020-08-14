@@ -114,7 +114,7 @@ Usage: terraform import [options] ADDR ID
 ...
 ```
 
-The `ADDR` mentioned in the usage output is would be the local terraform configuration `[RESOURCE TYPE].[RESOURCE IDENTIFIER]`. Let's go modify our configuration at this point to make some things clearer. Make our resource block in `main.tf` look like the following, so removing arguments from it
+The `ADDR` mentioned in the usage output is the local terraform configuration `[RESOURCE TYPE].[RESOURCE IDENTIFIER]`. Let's go modify our configuration at this point to make some things clearer. Make our resource block in `main.tf` look like the following, so removing arguments from it
 
 ```
 resource "aws_key_pair" "my_key_pair" {}
@@ -122,7 +122,7 @@ resource "aws_key_pair" "my_key_pair" {}
 
 So, we have a resource defined, a placeholder for some real piece of infrastructure we want to import, a key pair that exists in AWS
 
-Now, the `ID` part noted in the usage of the help. What this is very much depends on the type of resource. For an EC2 instance, it'll be the instance ID as defined by AWS, in our case for a key pair, it'll be the resource `id`. So, let's try the import as we should have everything we need to do so.
+Now, the `ID` part noted in the usage of the help. What this is very much depends on the type of resource. For an EC2 instance, it'll be the instance ID as defined by AWS, in our case for a key pair, it'll be the resource `id` we noted in our terraform show above. So, let's try the import as we should have everything we need to do so.
 
 ```
 $ terraform import aws_key_pair.my_key_pair rockholla-di-force
