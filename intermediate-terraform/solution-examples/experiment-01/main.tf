@@ -37,6 +37,6 @@ resource "aws_instance" "server" {
   security_groups = [module.security_group.info.name]
 
   tags = {
-    Name = "${var.student_alias}-server"
+    Name = "${var.student_alias}-experiment-01"
   }
 }
