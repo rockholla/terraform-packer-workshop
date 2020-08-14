@@ -9,3 +9,7 @@ variable "allowed_inbound_ports" {
 variable "allow_outbound" {
   type = bool
 }
+
+variable "env" {
+  type = string
+}

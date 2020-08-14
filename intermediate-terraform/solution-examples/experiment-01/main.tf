@@ -19,6 +19,7 @@ module "security_group" {
   name                  = "${var.student_alias}-experiment-01"
   allowed_inbound_ports = [80, 22]
   allow_outbound        = true
+  env                   = terraform.workspace
 }
 
 data "template_file" "server_user_data" {
@@ -38,5 +39,6 @@ resource "aws_instance" "server" {
 
   tags = {
     Name = "${var.student_alias}-experiment-01"
+    Env  = terraform.workspace
   }
 }
