@@ -55,7 +55,7 @@ Error: NoSuchBucket: The specified bucket does not exist
 	status code: 404, request id: 1683C8734D432E26, host id: js1qgCynndvqEXidODbkFDVoUH7l789icE5n335UIX+NoIo4V8AP+7bOWg3X2INoThxIjrV3/Rc=
 ```
 
-The takeaway here is that `-backend-config` can be provided multiple times, and that the order that they are given in a CLI command overrides any settings from before. We've provided a configuration with an invalide bucket name as the final one in the list, thus we get an error telling us our state bucket doesn't exist.
+The takeaway here is that `-backend-config` can be provided multiple times, and that the order that they are given in a CLI command overrides any settings from before. We've provided a configuration with an invalid bucket name as the final one in the list, thus we get an error telling us our state bucket doesn't exist.
 
 Back to our main line of the exercise, let's get back into a valid state
 
@@ -202,7 +202,7 @@ For the sake of this exercise, the interface into that module is just one that a
 
 In many ways, modules are about abstracting the complexities of managing infrastructure resources. I can make it even easier for my teammates to create a piece of infrastructure based on organizational standards, or even based on norms.
 
-Or root project here is very simple and clear about what it intends to manage. So, let's try to actually run a plan against this project and see what we see
+Our root project here is very simple and clear about what it intends to manage. So, let's try to actually run a plan against this project and see what we see
 
 ```
 $ terraform plan
@@ -379,7 +379,7 @@ project_table_arn = arn:aws:dynamodb:us-west-1:946320133426:table/force_project
 
 We'll focus on a few things here related to the apply and then look at state as well
 
-We've gotten some pretty complex output from our project. We're of course not doing much at the project level, simply telling our modules to do stuff for us and then getting some output from those modules. In the case of the `project_keys` output of our root project level, let's look at what's happening. Here's our output definitions at the root project level
+We've gotten some pretty complex output from our project. We're of course not doing much at the project level, simply telling our modules to do stuff for us and then getting some output from those modules. In the case of the `project_keys` output of our root project level, let's look at what's happening. Here are our output definitions at the root project level
 
 ```
 output "project_table_arn" {
@@ -439,7 +439,17 @@ keys          = [
 ]
 ```
 
-This list is driving a pretty simple resource definition in the module itself. Modules can determine the best user experience for things like this based on what the module itself believes needs to be exposed vs abstracted away from the user.
+This list is driving a pretty simple resource definition in the module itself. Modules can determine the best user experience for things like this based on what the module itself believes needs to be exposed vs abstracted away from the user. Here's the resource definition in the module:
+
+```
+resource "aws_key_pair" "project" {
+  count      = length(var.keys)
+  key_name   = "${var.unique_prefix}-${var.keys[count.index].name}-${uuid()}"
+  public_key = var.keys[count.index].public_key
+}
+```
+
+Using a built-in terraform function, `length`, we can count the number of `var.keys` passed to our module, and reference the object key/values for each list item via the syntax like `var.keys[count.index].name`
 
 Before we move on, **make sure to run a destroy to pull down the resources we created above**
 

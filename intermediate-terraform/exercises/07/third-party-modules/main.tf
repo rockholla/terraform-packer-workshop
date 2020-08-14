@@ -14,7 +14,6 @@ module "security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "3.13.0"
   name    = "${var.student_alias}-sg"
-  vpc_id  = data.aws_vpc.default.id
 }
 
 module "dynamodb_table" {
