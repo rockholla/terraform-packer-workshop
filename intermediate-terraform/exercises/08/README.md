@@ -512,7 +512,7 @@ The provider provider.aws does not support resource type
 "aws_invalid_resource_type".
 ```
 
-Ah, so our console output looks just like it would if we weren't use `TF_LOG` at all. Looking out our `plan.log` file now:
+Ah, so our console output looks just like it would if we weren't using `TF_LOG` at all. Looking out our `plan.log` file now:
 
 ```
 2020/08/09 17:50:24 [INFO] Terraform version: 0.12.29  
