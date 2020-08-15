@@ -24,6 +24,15 @@ a Cloud9 server/environment set up where you'll run further exercises.
 1. Wait for your environment to start.  In this step, AWS is provisioning an EC2 instance that your IDE environment will run on.  This gives us the distinct advantage of having a controlled environment for development regardless of client hardware and OS.  In the case of this workshop, it also allows us to connect to our instances and AWS's API without worrying about port availability in a corporate office. :-)
 1. Once your IDE loads, you should see a Welcome document.  Your instructor will give you a walkthrough of the visible panel.  Feel free to take a moment to read through the welcome document.
 
+## Resize your Cloud9 disk
+
+There really should be a way to set the root disk size to use on a Cloud9 instance, but surprisingly there isn't, so we need to increase it using some trickery at this stage:
+
+```bash
+curl -s https://gist.githubusercontent.com/wongcyrus/a4e726b961260395efa7811cab0b4516/raw/543fe335adaf7222f5f4fca475cf716d61b9a77b/resize.sh | sh
+```
+
+This should increase and grow your Cloud9 root disk to 20G
 
 ## Configure your environment
 
