@@ -862,7 +862,94 @@ Terraform will perform the following actions:
 Plan: 0 to add, 1 to change, 0 to destroy.
 ```
 
-Nice, back to where we were, so let's apply this now
+We see that there's some indication that jane's code is outdated, at the very least some changes have actually been applied to the infrastructure from elsewhere. Our plan now shows that, gives us a good indication that we need to do something like pull in new changes from source, do some checks over the cubicles with your team, whatever might be appropriate to make sense of it all.
+
+In our case, jane will simply update her code to match what seemingly has been an intended change elsewhere:
+
+```
+resource "aws_instance" "instance" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t2.medium"
+  tags = {
+    Name = "examples-planning-01"
+  }
+}
+```
+
+Then rerun our plan with an out file again:
+
+```
+terraform plan -out=plan.out
+terraform show plan.out
+
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  ~ update in-place
+
+Terraform will perform the following actions:
+
+  # aws_instance.instance will be updated in-place
+  ~ resource "aws_instance" "instance" {
+        ami                          = "ami-08e606e4fe6e7a28f"
+        arn                          = "arn:aws:ec2:us-west-2:946320133426:instance/i-0d02d00e96e27d752"
+        associate_public_ip_address  = true
+        availability_zone            = "us-west-2c"
+        cpu_core_count               = 2
+        cpu_threads_per_core         = 1
+        disable_api_termination      = false
+        ebs_optimized                = false
+        get_password_data            = false
+        hibernation                  = false
+        id                           = "i-0d02d00e96e27d752"
+        instance_state               = "running"
+        instance_type                = "t2.medium"
+        ipv6_address_count           = 0
+        ipv6_addresses               = []
+        monitoring                   = false
+        primary_network_interface_id = "eni-0eec1907e7f481c89"
+        private_dns                  = "ip-172-31-5-136.us-west-2.compute.internal"
+        private_ip                   = "172.31.5.136"
+        public_dns                   = "ec2-34-208-7-1.us-west-2.compute.amazonaws.com"
+        public_ip                    = "34.208.7.1"
+        security_groups              = [
+            "default",
+        ]
+        source_dest_check            = true
+        subnet_id                    = "subnet-490b1913"
+      ~ tags                         = {
+          ~ "Name" = "examples-planning" -> "examples-planning-01"
+        }
+        tenancy                      = "default"
+        volume_tags                  = {}
+        vpc_security_group_ids       = [
+            "sg-4ee26102",
+        ]
+
+        credit_specification {
+            cpu_credits = "standard"
+        }
+
+        metadata_options {
+            http_endpoint               = "enabled"
+            http_put_response_hop_limit = 1
+            http_tokens                 = "optional"
+        }
+
+        root_block_device {
+            delete_on_termination = true
+            device_name           = "/dev/sda1"
+            encrypted             = false
+            iops                  = 100
+            volume_id             = "vol-0d555eef76125a3db"
+            volume_size           = 8
+            volume_type           = "gp2"
+        }
+    }
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+```
+
+Now we're back to the only change being applied being our tag change.
 
 ```
 terraform apply plan.out
@@ -877,7 +964,9 @@ aws_instance.instance: Modifications complete after 55s [id=i-0d02d00e96e27d752]
 Apply complete! Resources: 0 added, 1 changed, 0 destroyed.
 ```
 
-If we were to yet again run into a situation where someone or something rendered our plan file stale in between our `plan` and `apply`, we would yet again get a message forcing us to regenerate our plan file.
+We could yet again see the indication of a stale plan file if a similar situation happened again like tim putting in between a change before we were able to apply. The important thing here is that these mechanisms are Terraform attempting to take increased measures to keep your state and infrastructure safe, even at the cost of human interaction and workflows in certain situations.
+
+These are some indications that putting Terraform into more automated, pipeline, CI/CD workflows makes A LOT of sense. Your instructor highly recommends doing so from the very beginning of any project, no matter how complex or simple the project.
 
 # DESTROY
 
