@@ -60,4 +60,8 @@ for region in $regions; do
       set -e
     fi
   done
+  for dynamodb_table in $(aws --region $region dynamodb list-tables | jq -r '.TableNames[]'); do
+    echo "Deleting DynamoDB table: $dynamodb_table"
+    run_clean_command aws --region $region dynamodb delete-table --table-name $dynamodb_table
+  done
 done
